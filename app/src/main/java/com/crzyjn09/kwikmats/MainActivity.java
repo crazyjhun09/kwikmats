@@ -12,6 +12,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static java.lang.Math.abs;
+
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar pb;
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     int counter = 0;
     int highscore = 0;
     int speed = 50;
+    int solved = 0;
     TimerTask tt = null;
 
     @Override
@@ -34,9 +37,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void toPlay(final View view) {
         counter=0;
-        int scoreMultiplier = score1/10;
+        final int scoreMultiplier = solved/10;
         int min = 0;
         int max = 5;
+
         if (scoreMultiplier == 1){
             max = (scoreMultiplier+1)*5;
         }
@@ -57,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
         int randomRes = new Random().nextInt((randRes - minRand) + 1) + minRand;
 
         final int corrector = new Random().nextInt(2);
-        if (randomRes == sum){
+        if (randomRes == sum && scoreMultiplier == 0){
+            randomRes++;
+        }
+        else if (randomRes == sum && scoreMultiplier >= 1){
             randomRes = randomRes+10;
         }
 
@@ -67,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView score = findViewById(R.id.score);
         score.setText("Score: "+score1);
         TextView numbers = findViewById(R.id.numbers);
+        pb = (ProgressBar)findViewById(R.id.progressBar);
         prog(view);
         if (corrector == 0) {
 
@@ -74,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
             noBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    score1++;
+                    score1 = score1 + 50 + ((int)(((float)abs(pb.getProgress()-100)/100)*50*(scoreMultiplier+1)));
+                    solved++;
                     toPlay(view);
                 }
             });
@@ -95,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
             yesBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    score1++;
+                    score1=score1 + 50 + ((int)(((float)abs(pb.getProgress()-100)/100)*50*(scoreMultiplier+1)));
+                    solved++;
                     toPlay(view);
                 }
             });
@@ -129,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             highscore = score1;
         }
         score1=0;
+        solved=0;
         toStart(view);
     }
 }
